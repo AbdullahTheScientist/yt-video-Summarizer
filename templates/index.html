@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Summarizer</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        input, button { padding: 10px; margin: 10px; }
+        textarea { width: 80%; height: 200px; }
+    </style>
+</head>
+<body>
+    <h1>YouTube Transcript to Summary</h1>
+    <form method="POST">
+        <input type="text" name="youtube_link" placeholder="Enter YouTube Video Link" required>
+        <input type="number" name="words" min="50" max="1000" value="100" step="10">
+        <button type="submit">Generate Summary</button>
+    </form>
+
+    {% if video_id %}
+        <h3>Video Preview</h3>
+        <img src="http://img.youtube.com/vi/{{ video_id }}/0.jpg" width="300">
+    {% endif %}
+
+    {% if summary %}
+        <h2>Summary:</h2>
+        <textarea readonly>{{ summary }}</textarea>
+    {% elif error %}
+        <p style="color: red;">Error: {{ error }}</p>
+    {% endif %}
+</body>
+</html>
