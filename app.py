@@ -13,7 +13,7 @@ app = Flask(__name__)
 def extract_transcript(youtube_video_url):
     """Extracts transcript from a given YouTube URL."""
     try:
-        video_id = youtube_video_url.split("=")[-1]
+        video_id = youtube_video_url.split("=")[1]
         transcript_text = YouTubeTranscriptApi.get_transcript(video_id)
         transcript = " ".join([i["text"] for i in transcript_text])
         return transcript
@@ -29,6 +29,22 @@ def generate_summary(transcript_text, words):
     model = genai.GenerativeModel("gemini-pro")
     response = model.generate_content(prompt)
     return response.text if response else "Error generating summary."
+
+@app.route('/')
+def index():
+    return {
+        "message": "Hello Mr. Hanif! Here are the available routes:",
+        "routes": {
+            "/transcript": "Get the transcription of a YouTube video",
+            "/summarize": "Summarize the transcribed text",
+            "/ask": "Chatbot interaction"
+        },
+        "parameters": {
+            "/transcript": ["youtube_link"],
+            "/summarize": ["youtube_link", "words"],
+            "/ask": ["summary", "user_input"]
+        }
+    }
 
 @app.route('/transcript', methods=['POST'])
 def get_transcript():
@@ -74,8 +90,11 @@ def ask_question():
     
     response = genai.GenerativeModel("gemini-pro").generate_content(
         f"""
-        You are a helpful assistant. Provide a well-structured response based on the summary below.
-        Summary:
+            You are an intelligent assistant. Provide a well-structured and informative response based on the Summary below.
+            - If the user's question is directly related to the Summary, answer it accurately.
+            - If the question is somewhat related but not explicitly covered in the Summary, provide relevant insights or background information.
+            - If the question is unrelated, politely redirect the user toward discussing the Summary content.
+
         {summary}
         
         User: {user_input}
@@ -86,3 +105,9 @@ def ask_question():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+
+
+
+
